@@ -15,8 +15,6 @@ define('DB_NAME' , 'news_2');
 define('DB_USERNAME' , 'root');
 define('DB_PASSWORD' , '123');
 
-
-
 // helpers
 function protocol()   //   http:// or https://
 {

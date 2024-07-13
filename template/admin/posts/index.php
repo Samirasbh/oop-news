@@ -38,6 +38,7 @@
                 <th>image</th>
                 <th>created at</th>
                 <th>updated at</th>
+                <th>published at</th>
                 <th>function</th>
 
                 <?php
@@ -67,6 +68,7 @@
                         </td>
                         <td><?=$r['created_at']?></td>
                         <td><?=$r['updated_at']?></td>
+                        <td><?=$r['published_at']?></td>
                         <td>
                             <a href="<?= url("admin/post/edit/$id") ?>">edit</a>
                             <a href="<?= url("admin/post/delete/$id") ?>">delete</a>

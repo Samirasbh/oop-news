@@ -40,7 +40,7 @@ class Admin
         // }
 
         $imageTmp = $image['tmp_name'];
-        $imagePath = 'public/' . $imagePath . '/';
+        $imagePath = './public/assets/' . $imagePath . '/';
 
         if (is_uploaded_file($imageTmp)) {
             if (move_uploaded_file($imageTmp, $imageName . $imagePath)) {
@@ -55,9 +55,11 @@ class Admin
 
     protected function removeImage($path)
     {
-        $path = trim($this->basePath, '/ ') . '/' . trim($path, '/ ');
+
+        $path = str_replace(CURRENT_DOMAIN , "" , $path);
         if (file_exists($path)) {
-            unlink($path);
+            unlink(trim($this->basePath, '/ ') ."/". trim($path , "/"));
+            clearstatcache() ;
         }
     }
 

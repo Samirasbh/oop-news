@@ -23,12 +23,32 @@ class Post extends Admin
 
     public function store($request)
     {
-        $db = new DataBase;
-        $imgPath =  "assets/" . $request['img_address']['name'];
-        $this->saveImage($request['img_address'], $imgPath);
-        $request['img_address'] = asset("assets/" . $request['img_address']['full_path']);
-        $db->insert("posts", array_keys($request), $request);
-        $this->redirect("admin/post");
+
+        /* ---------  ---------- */
+        // $db = new DataBase;
+        // $imgPath =  "assets/" . $request['img_address']['name'];
+        // $this->saveImage($request['img_address'], $imgPath);
+        // $request['img_address'] = asset("assets/" . $request['img_address']['full_path']);
+        // $db->insert("posts", array_keys($request), $request);
+        // $this->redirect("admin/post");
+
+
+        date_default_timezone_set('Iran');
+        $realTimestampt = substr($request['published_at'], 0, 10);
+        $request['published_at'] = date("Y-m-d H:i:s", (int)$realTimestampt);
+        $db = new DataBase();
+        if ($request['category_id'] != null) {
+            $this->saveImage($request['img_address'], $request['img_address']['name']);
+            $request['img_address'] = asset("assets/" . $request['img_address']['full_path']);
+            if ($request['img_address']) {
+                $db->insert('posts', array_keys($request), $request);
+                $this->redirect('admin/post');
+            } else {
+                $this->redirect('admin/post');
+            }
+        } else {
+            $this->redirect('admin/post');
+        }
     }
 
     public function edit($id)
@@ -45,25 +65,47 @@ class Post extends Admin
 
     public function update($request, $id)
     {
-        $db = new DataBase;
+        // $db = new DataBase;
+        // $imgPath =  "assets/" . $request['img_address']['name'];
+        // $this->saveImage($request['img_address'], $imgPath);
 
-        // *****     this code saves image / without saveImage function     ****** 
-        // $imgPath = "./public/assets/".$request['img_address']['name'];
-        // move_uploaded_file($request['img_address']['tmp_name'] , $imgPath);
+        // $request['img_address'] = asset("assets/" . $request['img_address']['full_path']);
+        // $db->update('posts', $id, array_keys($request), $request);
+        // $this->redirect('admin/post');
 
-        $imgPath =  "assets/" . $request['img_address']['name'];
-        $this->saveImage($request['img_address'], $imgPath);
+        date_default_timezone_set('Iran');
+        $realTimestampt = substr($request['published_at'], 0, 10);
+        $request['published_at'] = date("Y-m-d H:i:s", (int)$realTimestampt);
+        $db = new DataBase();
+        if ($request['category_id'] != null) {
+            if ($request['img_address']['tmp_name'] != null) {
+                $post = $db->select('SELECT * FROM posts WHERE id = ?;', [$id])->fetch();
 
-        $request['img_address'] = asset("assets/" . $request['img_address']['full_path']);
-        $db->update('posts', $id, array_keys($request), $request);
-        $this->redirect('admin/post');
+                $this->removeImage($post['img_address']);
+                $imgPath = $request['img_address']['name'];
+                $this->saveImage($request['img_address'], $imgPath);
+                $request['img_address'] = asset("assets/" . $request['img_address']['full_path']);
+            } else {
+                unset($request['img_address']);
+            }
+            $db->update('posts', $id, array_keys($request), $request);
+            $this->redirect('admin/post');
+        } else {
+            $this->redirect('admin/post');
+        }
+        // dd($request);
     }
 
     public function delete($id)
     {
-        $db = new DataBase;
+        // $db = new DataBase;
+        // $db->delete("posts", $id);
+        // $this->redirect("admin/post");
 
-        $db->delete("posts", $id);
-        $this->redirect("admin/post");
+        $db = new DataBase();
+        $post = $db->select('SELECT * FROM posts WHERE id = ?;', [$id])->fetch();
+        $this->removeImage($post['img_address']);
+        $db->delete('posts', $id);
+        $this->redirectBack();
     }
 }
